@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import UserMenu from '@/components/UserMenu'
 
 export default async function Home() {
   const supabase = await createClient()
@@ -19,12 +20,7 @@ export default async function Home() {
         </div>
         <div className="flex items-center gap-3">
           {user ? (
-            <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-[rgba(255,255,255,0.05 transition-all]">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
-                {user.email?.[0].toUpperCase()}
-              </div>
-              <span className="text-sm font-medium hidden sm:inline-block">Dashboard</span>
-            </Link>
+            <UserMenu user={user} />
           ) : (
             <>
               <Link href="/signin" className="btn-secondary !py-2 !px-5 text-sm">
