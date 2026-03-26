@@ -1,6 +1,7 @@
 'use client'
 
 import QRPreview from './QRPreview'
+import QRCode from 'qrcode'
 
 interface QRCodeItem {
   id: string
@@ -45,6 +46,27 @@ export default function QRCodeList({ qrcodes, appUrl, onEdit, onDelete, filterGr
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
+  }
+
+  const handleDownload = async (shortUrl: string, title: string | null) => {
+    try {
+      const dataUrl = await QRCode.toDataURL(shortUrl, {
+        width: 1024,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#ffffff',
+        },
+      })
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `qr-${(title || 'code').toLowerCase().replace(/\s+/g, '-')}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (err) {
+      console.error('Failed to download QR code', err)
+    }
   }
 
   if (filtered.length === 0) {
@@ -144,6 +166,15 @@ export default function QRCodeList({ qrcodes, appUrl, onEdit, onDelete, filterGr
 
               {/* Actions */}
               <div className="flex md:flex-col gap-2 flex-shrink-0">
+                <button
+                  onClick={() => handleDownload(shortUrl, qr.title)}
+                  className="btn-primary !px-3 !py-2 text-xs"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </button>
                 <button
                   onClick={() => onEdit(qr)}
                   className="btn-secondary !px-3 !py-2 text-xs"
