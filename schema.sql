@@ -3,6 +3,14 @@
 -- Run this in Supabase SQL Editor
 -- ============================================
 
+-- CLEANUP (Uncomment if you want to wipe existing data)
+-- DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+-- DROP FUNCTION IF EXISTS handle_new_user;
+-- DROP TABLE IF EXISTS scans;
+-- DROP TABLE IF EXISTS qrcodes;
+-- DROP TABLE IF EXISTS qr_groups;
+-- DROP TABLE IF EXISTS profiles;
+
 -- Profiles table (synced with Supabase auth.users)
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
