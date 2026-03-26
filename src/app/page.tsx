@@ -1,6 +1,10 @@
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <div className="min-h-screen" style={{ background: 'radial-gradient(ellipse at top, rgba(99,102,241,0.06) 0%, transparent 50%)' }}>
       {/* Navigation */}
@@ -14,12 +18,23 @@ export default function Home() {
           <span className="text-xl font-bold gradient-text">DynQR</span>
         </div>
         <div className="flex items-center gap-3">
-          <Link href="/signin" className="btn-secondary !py-2 !px-5 text-sm">
-            Sign In
-          </Link>
-          <Link href="/signup" className="btn-primary !py-2 !px-5 text-sm">
-            Get Started
-          </Link>
+          {user ? (
+            <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-[rgba(255,255,255,0.05 transition-all]">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
+                {user.email?.[0].toUpperCase()}
+              </div>
+              <span className="text-sm font-medium hidden sm:inline-block">Dashboard</span>
+            </Link>
+          ) : (
+            <>
+              <Link href="/signin" className="btn-secondary !py-2 !px-5 text-sm">
+                Sign In
+              </Link>
+              <Link href="/signup" className="btn-primary !py-2 !px-5 text-sm">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
