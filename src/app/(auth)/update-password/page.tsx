@@ -78,10 +78,13 @@ export default function UpdatePassword() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="input-field"
-                placeholder="Min. 6 characters"
+                placeholder="••••••••"
                 required
-                minLength={6}
+                minLength={8}
               />
+              <p className="mt-1.5 text-[10px] text-[var(--color-muted)] leading-relaxed">
+                Must be at least 8 Characters with uppercase, lowercase, number & symbol.
+              </p>
             </div>
 
             <div>
