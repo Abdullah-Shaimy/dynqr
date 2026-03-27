@@ -44,6 +44,13 @@ export default function UpdatePassword() {
     <div className="min-h-screen flex items-center justify-center px-4" style={{ background: 'radial-gradient(ellipse at top, rgba(99,102,241,0.08) 0%, transparent 50%)' }}>
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-xs text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors mb-4 group">
+            <svg className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Home
+          </Link>
+          <br />
           <Link href="/" className="inline-block">
             <h1 className="text-3xl font-bold gradient-text">DynQR</h1>
           </Link>
