@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { useProfile } from '@/providers/ProfileProvider'
 
 export default function ProfilePage() {
+  const { updateProfileState } = useProfile()
   const [name, setName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -55,15 +58,30 @@ export default function ProfilePage() {
 
       const filePath = `${user.id}/${Math.random()}.${fileExt}`
 
+      // Upload new file
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file)
 
       if (uploadError) throw uploadError
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath)
+
+      // Delete old file if exists and is different
+      if (avatarUrl) {
+        try {
+          // Extract path from URL (Supabase public format: bucket/object)
+          const oldPath = avatarUrl.split('/storage/v1/object/public/avatars/')[1]
+          if (oldPath) {
+            await supabase.storage.from('avatars').remove([oldPath])
+          }
+        } catch (delErr) {
+          console.error('Error deleting old avatar:', delErr)
+        }
+      }
 
       setAvatarUrl(publicUrl)
       setMessage("Photo uploaded! Don't forget to save changes.")
@@ -98,12 +116,14 @@ export default function ProfilePage() {
     if (updateError) {
       setError(updateError.message)
     } else {
-      // Also update auth metadata for immediate UI sync
+      // Update global context state
+      updateProfileState({ name, avatar_url: avatarUrl })
+      
+      // Also update auth metadata for extra redundancy
       await supabase.auth.updateUser({
         data: { name }
       })
       setMessage('Profile updated successfully!')
-      router.refresh()
     }
     setSaving(false)
   }
@@ -139,9 +159,9 @@ export default function ProfilePage() {
           {/* Profile Photo Upload */}
           <div className="flex flex-col items-center sm:flex-row gap-6 pb-6 border-b border-[var(--color-border)]">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-3xl font-bold shadow-xl">
+              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--color-border)] bg-[var(--color-surface)] flex items-center justify-center text-3xl font-bold shadow-xl relative">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
                 ) : (
                   name ? name[0].toUpperCase() : 'U'
                 )}

@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
+import { useProfile } from '@/providers/ProfileProvider'
 
 interface UserMenuProps {
   user: {
@@ -15,31 +17,14 @@ interface UserMenuProps {
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const { profile } = useProfile()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const supabase = createClient()
 
-  useEffect(() => {
-    async function getProfile() {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', authUser.id)
-          .single()
-        
-        if (profile?.avatar_url) {
-          setAvatarUrl(profile.avatar_url)
-        }
-      }
-    }
-    getProfile()
-  }, [supabase])
-
-  const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User'
+  const displayName = profile?.name || user.user_metadata?.name || user.email?.split('@')[0] || 'User'
+  const avatarUrl = profile?.avatar_url
   const initial = displayName[0].toUpperCase()
 
   useEffect(() => {
@@ -64,9 +49,9 @@ export default function UserMenu({ user }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-[rgba(255,255,255,0.05)] transition-all border border-transparent hover:border-[var(--color-border)]"
       >
-        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg overflow-hidden relative" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+            <Image src={avatarUrl} alt={displayName} fill className="object-cover" />
           ) : (
             initial
           )}

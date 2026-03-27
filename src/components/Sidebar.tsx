@@ -1,34 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { useProfile } from '@/providers/ProfileProvider'
 
-export default function Sidebar({ userName }: { userName?: string }) {
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+export default function Sidebar({ userName: initialUserName }: { userName?: string }) {
+  const { profile } = useProfile()
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
 
-  useEffect(() => {
-    async function getProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', user.id)
-          .single()
-        
-        if (profile?.avatar_url) {
-          setAvatarUrl(profile.avatar_url)
-        }
-      }
-    }
-    getProfile()
-  }, [supabase])
+  const userName = profile?.name || initialUserName
+  const avatarUrl = profile?.avatar_url
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -105,9 +92,9 @@ export default function Sidebar({ userName }: { userName?: string }) {
       {/* User section */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="flex items-center gap-3 px-2 mb-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden relative" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
             {avatarUrl ? (
-              <img src={avatarUrl} alt={userName || 'User'} className="w-full h-full object-cover" />
+              <Image src={avatarUrl} alt={userName || 'User'} fill className="object-cover" />
             ) : (
               userName ? userName[0].toUpperCase() : 'U'
             )}
