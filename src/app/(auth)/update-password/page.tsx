@@ -24,8 +24,11 @@ export default function UpdatePassword() {
       return
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+    // Password validation regex
+    // Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.')
       setLoading(false)
       return
     }

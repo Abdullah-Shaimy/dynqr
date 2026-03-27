@@ -18,8 +18,11 @@ export default function SignUp() {
     setLoading(true)
     setError('')
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+    // Password validation regex
+    // Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.')
       setLoading(false)
       return
     }
@@ -34,7 +37,11 @@ export default function SignUp() {
     })
 
     if (error) {
-      setError(error.message)
+      if (error.message.includes('already registered')) {
+        setError('Email already used. Please sign in or use a different email.')
+      } else {
+        setError(error.message)
+      }
     } else {
       setSuccess(true)
     }
