@@ -1,14 +1,34 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 export default function Sidebar({ userName }: { userName?: string }) {
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    async function getProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single()
+        
+        if (profile?.avatar_url) {
+          setAvatarUrl(profile.avatar_url)
+        }
+      }
+    }
+    getProfile()
+  }, [supabase])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -85,8 +105,12 @@ export default function Sidebar({ userName }: { userName?: string }) {
       {/* User section */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <div className="flex items-center gap-3 px-2 mb-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
-            {userName ? userName[0].toUpperCase() : 'U'}
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={userName || 'User'} className="w-full h-full object-cover" />
+            ) : (
+              userName ? userName[0].toUpperCase() : 'U'
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{userName || 'User'}</p>
@@ -94,13 +118,25 @@ export default function Sidebar({ userName }: { userName?: string }) {
         </div>
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-[var(--color-muted)] hover:text-[var(--color-danger)] hover:bg-[rgba(239,68,68,0.05)] transition-all"
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-[var(--color-muted)] hover:text-[var(--color-danger)] hover:bg-[rgba(239,68,68,0.05)] transition-all mb-4"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Sign Out
         </button>
+
+        <div className="px-2 pt-4 border-t border-[var(--color-border)] opacity-60">
+          <p className="text-[10px] text-[var(--color-muted)] mb-1">Developed & Maintained by</p>
+          <a 
+            href="https://abdullahshaimy.lk" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-[11px] font-medium text-[var(--color-primary-hover)] hover:underline block"
+          >
+            Abdullah Shaimy
+          </a>
+        </div>
       </div>
     </aside>
   )

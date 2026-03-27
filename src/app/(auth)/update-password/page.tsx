@@ -94,6 +94,18 @@ export default function UpdatePassword() {
               {loading ? 'Updating...' : 'Update Password'}
             </button>
           </form>
+
+          <div className="mt-8 pt-6 border-t border-[var(--color-border)] opacity-60 text-center">
+            <p className="text-[10px] text-[var(--color-muted)] mb-1">Developed & Maintained by</p>
+            <a 
+              href="https://abdullahshaimy.lk" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-xs font-medium text-[var(--color-primary-hover)] hover:underline"
+            >
+              Abdullah Shaimy
+            </a>
+          </div>
         </div>
       </div>
     </div>

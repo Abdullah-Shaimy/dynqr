@@ -90,9 +90,20 @@ export default function ResetPassword() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/signin" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors">
+            <Link href="/signin" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors block mb-6">
               ← Back to Sign In
             </Link>
+            <div className="pt-6 border-t border-[var(--color-border)] opacity-60">
+              <p className="text-[10px] text-[var(--color-muted)] mb-1">Developed & Maintained by</p>
+              <a 
+                href="https://abdullahshaimy.lk" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-xs font-medium text-[var(--color-primary-hover)] hover:underline"
+              >
+                Abdullah Shaimy
+              </a>
+            </div>
           </div>
         </div>
       </div>

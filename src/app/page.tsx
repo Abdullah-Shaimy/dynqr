@@ -176,10 +176,12 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="px-6 md:px-12 py-8 text-center" style={{ borderTop: '1px solid var(--color-border)' }}>
-        <p className="text-sm text-[var(--color-muted)]">
+      <footer className="px-6 md:px-12 py-10 text-center" style={{ borderTop: '1px solid var(--color-border)' }}>
+        <p className="text-sm text-[var(--color-muted)] mb-2">
           © {new Date().getFullYear()} DynQR. Built with Next.js & Supabase. Free & Open.
+        </p>
+        <p className="text-sm text-[var(--color-muted)]">
+          Developed and maintained by <a href="https://abdullahshaimy.lk" target="_blank" rel="noopener noreferrer" className="text-[var(--color-primary-hover)] hover:underline font-medium">Abdullah Shaimy</a>
         </p>
       </footer>
     </div>
